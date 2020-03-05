@@ -1,0 +1,221 @@
+
+" Vundel
+set nocompatible
+filetype off
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+"Ultisnipets
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
+Plugin 'qpkorr/vim-bufkill'
+"
+" A Vim Plugin for Lively Previewing LaTeX PDF Output
+Plugin 'xuhdev/vim-latex-live-preview'
+
+" Make Vim look good
+Plugin 'tomasr/molokai'
+Plugin 'bling/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+
+" Vim as a programmer's text editor
+Plugin 'scrooloose/nerdtree'
+Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'scrooloose/syntastic'
+Plugin 'xolox/vim-misc'
+Plugin 'xolox/vim-easytags'
+Plugin 'majutsushi/tagbar'
+Plugin 'Shougo/neocomplete.vim'
+Plugin 'junegunn/fzf.vim'
+Plugin 'junegunn/fzf'
+Plugin 'godlygeek/tabular'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'benmills/vimux'
+Plugin 'jeetsukumaran/vim-buffergator'
+Plugin 'gilsondev/searchtasks.vim'
+Plugin 'BufOnly.vim'
+Plugin 'wesQ3/vim-windowswap'
+
+" Markdown / Writting
+Plugin 'reedes/vim-pencil'
+Plugin 'tpope/vim-markdown'
+Plugin 'jtratner/vim-flavored-markdown'
+Plugin 'LanguageTool'
+
+" Git Support
+Plugin 'kablamo/vim-git-log'
+Plugin 'gregsexton/gitv'
+Plugin 'tpope/vim-fugitive'
+
+call vundle#end()
+
+execute pathogen#infect()
+filetype plugin on
+filetype indent plugin on
+syntax on
+
+" ============ General Configuration ==============
+" Switching buffer without saving
+set hidden
+" Better command-line completion
+set wildmenu
+" Show partial commands in the last line of the screen
+set showcmd
+" Numbers
+set number
+" Enable highlighting of the current line
+set cursorline
+
+" -----------------------------
+"  set indentation
+set foldmethod=indent
+set autoindent
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+set expandtab
+set nosmartindent
+set cindent
+filetype plugin indent on
+set cinkeys-=0#
+set indentkeys-=0#
+autocmd FileType * set cindent "some file types override it
+
+" -----------------------------
+"  set configuration
+set nowrap
+
+
+
+" -----------------------------
+" closing Characters
+" set AutoCloseOn
+
+" -----------------------------
+" Spelling on TeX documents
+autocmd FileType plaintex,tex,latex syntax spell toplevel
+
+" ============ Plugins ==============
+" -----------------------------
+" Snippets
+set runtimepath+=~/.vim/my-snippets/
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsSnippetDirectories=["UltiSnips"]
+
+" -----------------------------
+" LatexPreview
+let g:livepreview_previewer = 'open -a Preview'
+
+" -----------------------------
+" bling/vim-airline
+set laststatus=2
+
+" let g:airline_powerline_fonts = 1
+let g:airline_detect_paste = 1
+let g:airline#extensions#tabline#enable = 1
+let g:airline_theme="solarized"
+
+" -----------------------------
+" nerdtree
+let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
+"
+" ----- scrooloose/syntastic settings -----
+let g:syntastic_error_symbol = '✘'
+let g:syntastic_warning_symbol = "▲"
+augroup mySyntastic
+  au!
+  au FileType tex let b:syntastic_mode = "passive"
+augroup END
+
+" ----- xolox/vim-easytags settings -----
+" Where to look for tags files
+set tags=./tags;,~/.vimtags
+" Sensible defaults
+let g:easytags_events = ['BufReadPost', 'BufWritePost']
+let g:easytags_async = 1
+let g:easytags_dynamic_files = 2
+let g:easytags_resolve_links = 1
+let g:easytags_suppress_ctags_warning = 1
+
+" Neocomplete Settings
+let g:acp_enableAtStartup = 0
+let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#enable_smart_case = 1
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+" Define dictionary.
+let g:neocomplete#sources#dictionary#dictionaries = {
+\ 'default' : '',
+\ 'vimshell' : $HOME.'/.vimshell_hist',
+\ 'scheme' : $HOME.'/.gosh_completions'
+\ }
+" Define keyword.
+if !exists('g:neocomplete#keyword_patterns')
+let g:neocomplete#keyword_patterns = {}
+endif
+let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+function! s:my_cr_function()
+return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+  " For no inserting <CR> key.
+  "return pumvisible() ? "\<C-y>" : "\<CR>"
+endfunction
+" Close popup by <Space>.
+"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
+" AutoComplPop like behavior.
+"let g:neocomplete#enable_auto_select = 1
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+" Enable heavy omni completion.
+if !exists('g:neocomplete#sources#omni#input_patterns')
+let g:neocomplete#sources#omni#input_patterns = {}
+endif
+"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+"
+" For perlomni.vim setting.
+" https://github.com/c9s/perlomni.vim
+let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+
+" ----- majutsushi/tagbar settings -----
+" Open/close tagbar with \b
+nmap <silent> <leader>b :TagbarToggle<CR>
+" Uncomment to open tagbar automatically whenever possible
+"autocmd BufEnter * nested :call tagbar#autoopen(0)
+
+" -----------------------------
+" Language Tool
+" let g:languagetool_jar='$HOME/languagetool/languagetool-standalone/target/LanguageTool-4.5-SNAPSHOT/LanguageTool-4.5-SNAPSHOT/languagetool-commandline.jar'
+" Setting English grammar checking
+" set spelllang=en_us LanguageTool
+"
+
+"""""""""""""""""""""""""""""""""""""
+" Mappings configurationn
+"""""""""""""""""""""""""""""""""""""
+map <C-n> :NERDTreeToggle<CR>
+map <C-m> :TagbarToggle<CR>
+" Omnicomplete Better Nav
+inoremap <expr> <c-j> ("\<C-n>")
+inoremap <expr> <c-k> ("\<C-p>")
+" Neocomplete Plugin mappins
+inoremap <expr><C-g>     neocomplete#undo_completion()
+inoremap <expr><C-l>     neocomplete#complete_common_string()
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+
+
+
