@@ -1,0 +1,47 @@
+snippet classob "Class object" b
+class ${1:className}(object):
+	
+	def __init__(self,${2:params}):
+		'''
+		DESCRIPTION:
+			${3: Description of the code}
+		__________________________________________________________________________
+		INPUT:
+			:param ${4:Param}: ${5:Description.}
+		__________________________________________________________________________
+		OUTPUT:
+			:return ${6:Var}: ${7:Description.}
+		'''
+		$0
+endsnippet
+
+snippet deffun "Complete function information" b
+def ${1:fname}(${2:params}):
+	'''
+	DESCRIPTION:
+		${3: Description of the code}
+	____________________________________________________________________________
+	INPUT:
+		:param ${4:Param}: ${5:Description.}
+	____________________________________________________________________________
+	OUTPUT:
+		:return ${6:Var}: ${7:Description.}
+	'''
+	$0
+	return
+endsnippet
+
+snippet forr "for in range" b
+for ${1:i} in range(${2:}):
+	$0
+endsnippet
+
+snippet foren "for in enumerate" b
+for ${1:iv},${2:v} in enumerate(${3:List}):
+	$0
+endsnippet
+
+snippet notnone "not(Var is None)" 
+not(${1:iv} is None)$0
+endsnippet
+
