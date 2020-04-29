@@ -18,6 +18,6 @@ problem please contact the programmer to the following e-mails:
 - danielgondu@gmail.com 
 ____________________________________________________________________________
 '''
-import .graphs
-import .utilities
+from .graphs import *
+from .utilities import *
 
