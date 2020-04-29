@@ -27,10 +27,10 @@ from setuptools import setup
 
 setup(
     name="pyDGDutil",
-    version="1.0.1"
+    version="1.0.1",
     author="Daniel González Duque",
     description="Complementary scripts of other codes",
     license="MIT",
-    packages=["pyDGDutil"]
+    packages=["pyDGDutil"],
     pyhon_requires='>=3.6'
 )
