@@ -23,7 +23,7 @@ import matplotlib.colors as colors
 import seaborn as sns
 
 # Personal libraries
-import utilities as utl
+from . import utilities as utl
 
 # ------------------------
 # Functions
