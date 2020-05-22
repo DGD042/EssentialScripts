@@ -432,6 +432,103 @@ def Graph2DSubPlots(Projects,Vars,Name,PathImg,S=None,SB=None,
     plt.close('all')
     return 
 
+def Graph2D_Comp(Data, Titles, X_train=None, X_test=None, PathImg='',
+        Name='Test.png', vlim=[], wrapping=30, Norm=None, cmap='YlGn',cols=2,
+        plotfunc=None,kwargsplot={},xlabels=r'$x_1$',ylabels=r'$x_2$',
+        kwargsLegend=None):
+    if Norm is None:
+        Norm = [None for i in Data]
+    if isinstance(cmap,str):
+        cmap = [cmap for i in Data]
+    if plotfunc is None:
+        plotfunc = [plt.pcolormesh for i in range(len(Data))]
+    utl.CrFolder(PathImg)
+    fontsize=16
+    plt.rcParams.update({'font.size': 16,'font.family': 'sans-serif'\
+        ,'font.sans-serif': 'Arial'\
+        ,'xtick.labelsize': 16,'xtick.major.size': 6,'xtick.minor.size': 4\
+        ,'xtick.major.width': 1,'xtick.minor.width': 1\
+        ,'ytick.labelsize': 16,'ytick.major.size': 12,'ytick.minor.size': 4\
+        ,'ytick.major.width': 1,'ytick.minor.width': 1\
+        ,'axes.linewidth':1\
+        ,'grid.alpha':0.1,'grid.linestyle':'-'})
+    Rows = int(np.ceil(len(Data)/cols))
+    if cols >= 3:
+        F = plt.figure(figsize=(10*Rows,8+Rows))
+    else:
+        F = plt.figure(figsize=(10,8))
+    for iD,D in enumerate(Data):
+        try:
+            if vlim[iD] is None:
+                vmaxT = None
+            else:
+                vmaxT = np.nanmax(vlim[iD])
+                vminT = np.nanmin(vlim[iD])
+                v = np.linspace(vminT, vmaxT, 5, endpoint=True)
+                bounds = np.linspace(vminT,vmaxT,10)
+        except:
+            vmaxT = None
+        if len(Data) == 1:
+            axs = F.add_subplot(2, 2, iD+1)
+        else:
+            axs = F.add_subplot(int(np.ceil(len(Data)/cols)), cols,  iD+1)
+        axs.set_title(f"\n".join(wrap(Titles[iD],wrapping)),fontsize=fontsize)
+        if plotfunc[iD] is plt.pcolormesh:
+            if not(vmaxT is None):
+                if Norm[iD] is None:
+                    b = axs.pcolormesh(D['X'],D['Y'],D['Z'],vmax=vmaxT,
+                            vmin=vminT,cmap=cmap[iD])
+                else:
+                    b = axs.pcolormesh(D['X'],D['Y'],D['Z'],vmax=vmaxT,
+                            vmin=vminT,cmap=cmap[iD], 
+                            norm=MidpointNormalize(midpoint=Norm[iD],vmin=vminT,
+                                vmax=vmaxT))
+                cbar = plt.colorbar(b,boundaries=bounds,ticks=v,ax=axs)
+            else:
+                b = axs.pcolormesh(D['X'], D['Y'], D['Z'], cmap=cmap[iD],)
+                cbar = plt.colorbar(b)
+
+            # Plotting training points
+            if not(X_train is None):
+                X_train = np.array(X_train)
+                if len(X_train.shape) == 1:
+                    if not(X_train[iD] is None):
+                        axs.plot(X_train[iD][:,0], X_train[iD][:,1], 'kx', markersize=10)
+                else:
+                    axs.plot(X_train[:,0], X_train[:,1], 'kx', markersize=10)
+            if not(X_test is None):
+                axs.plot(X_test[:,0], X_test[:,1], 'r*', markersize=10, mfc='none')
+        else:
+            try:
+                Di = D[0]
+                for iiD,DD in enumerate(D):
+                    try:
+                        plotfunc[iD][iiD](DD['X'],DD['Y'],ax=axs,**kwargsplot[iD][iiD])
+                    except:
+                        plotfunc[iD][iiD](DD['X'],DD['Y'],**kwargsplot[iD][iiD])
+                if not(kwargsLegend[iD] is None):
+                    plt.legend(**kwargsLegend[iD])
+            except KeyError:
+                try:
+                    plotfunc[iD](D['X'],D['Y'],ax=axs,**kwargsplot[iD])
+                except:
+                    plotfunc[iD](D['X'],D['Y'],**kwargsplot[iD])
+            axs.grid()
+
+        if isinstance(xlabels,str):
+            axs.set_xlabel(r'$x_1$',fontsize=fontsize)
+        else:
+            axs.set_xlabel(xlabels[iD],fontsize=fontsize)
+        if isinstance(ylabels,str):
+            axs.set_ylabel(r'$x_2$',fontsize=fontsize)
+        else:
+            axs.set_ylabel(ylabels[iD],fontsize=fontsize)
+    F.tight_layout()
+    tic = time.time()
+    plt.savefig(f'{PathImg}{Name}',format=Name.split('.')[-1],dpi=200)
+    plt.close('all')
+    return
+
 def Graph2DSubPlotsDiff(Projects,Vars,Name,PathImg,S=None,SB=None,
         verbose=True,TimeF=True,cmap='jet',Titles=None):
     '''
@@ -1195,3 +1292,70 @@ def BarPlot(Data,Variables,Title,xlabel,ylabel,PathImg,Name,
     plt.close('all')
     return
 
+def BoxGraph(Data,Variables,Title,xlabel,ylabel,PathImg,Name,
+        vlim=None,kwargs={},kwargslegend=None,line=None,fontsize=18):
+    '''
+    DESCRIPTION:
+         This function creates a histogram with the information given.
+    ____________________________________________________________
+    INPUT:
+        :param Data: a dict,
+            Data to plot.
+        :param Variables: a list, 
+            X and Y variables to plot.
+        :param xlabel: a str, 
+            xlabel.
+        :param ylabel: a str, 
+            ylabel.
+        :param PathImg: a str, 
+            Path to save the image.
+        :param Name: a str, 
+            Name of the image.
+        :param kwargs: a dict, 
+            dict with values for the plot.
+        :param kwargsLegend: a dict, 
+            dict with values for the legend.
+        :param line: a float, 
+            Line to plot.
+    ____________________________________________________________
+    OUTPUT:
+        :return: This function returns a plot.
+    '''
+    # Generate Figurer
+    utl.CrFolder(PathImg)
+    # Creating Figure
+    plt.rcParams.update({'font.size': fontsize,'font.family': 'sans-serif'\
+        ,'font.sans-serif': 'Arial'\
+        ,'xtick.labelsize': fontsize,'xtick.major.size': 6,'xtick.minor.size': 4\
+        ,'xtick.major.width': 1,'xtick.minor.width': 1\
+        ,'ytick.labelsize': fontsize,'ytick.major.size': 12,'ytick.minor.size': 4\
+        ,'ytick.major.width': 1,'ytick.minor.width': 1\
+        ,'axes.linewidth':1\
+        ,})
+    Inch = 0.393701
+    fH = 20*Inch
+    fV = 20*Inch
+    plt.figure(figsize=(fH,fV))
+    plt.figure()
+    if not(line is None):
+        plt.axhline(line,color='k',linestyle='--')
+    ax = sns.boxplot(x=Variables[0],y=Variables[1],data=Data,
+            **kwargs)
+    plt.grid()
+    plt.title(Title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    # Limits
+    if not(vlim is None):
+        if not(vlim[0] is None):
+            plt.xlim(vlim[0])
+        if not(vlim[1] is None):
+            plt.ylim(vlim[1])
+
+    if not(kwargs is None) and not(kwargslegend is None):
+        handles, _ = ax.get_legend_handles_labels()
+        ax.legend(handles,_,**kwargslegend)
+    plt.tight_layout()
+    plt.savefig('{}{}'.format(PathImg,Name),format=Name.split('.')[-1],dpi=300)
+    plt.close('all')
