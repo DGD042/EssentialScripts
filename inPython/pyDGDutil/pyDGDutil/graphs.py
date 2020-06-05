@@ -21,7 +21,10 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import matplotlib.colors as colors
 import seaborn as sns
+from textwrap import wrap
 
+# System 
+import time
 # Personal libraries
 from . import utilities as utl
 
@@ -435,7 +438,7 @@ def Graph2DSubPlots(Projects,Vars,Name,PathImg,S=None,SB=None,
 def Graph2D_Comp(Data, Titles, X_train=None, X_test=None, PathImg='',
         Name='Test.png', vlim=[], wrapping=30, Norm=None, cmap='YlGn',cols=2,
         plotfunc=None,kwargsplot={},xlabels=r'$x_1$',ylabels=r'$x_2$',
-        kwargsLegend=None):
+        kwargsLegend=None,fontsize=22):
     if Norm is None:
         Norm = [None for i in Data]
     if isinstance(cmap,str):
@@ -443,12 +446,11 @@ def Graph2D_Comp(Data, Titles, X_train=None, X_test=None, PathImg='',
     if plotfunc is None:
         plotfunc = [plt.pcolormesh for i in range(len(Data))]
     utl.CrFolder(PathImg)
-    fontsize=16
-    plt.rcParams.update({'font.size': 16,'font.family': 'sans-serif'\
+    plt.rcParams.update({'font.size': fontsize,'font.family': 'sans-serif'\
         ,'font.sans-serif': 'Arial'\
-        ,'xtick.labelsize': 16,'xtick.major.size': 6,'xtick.minor.size': 4\
+        ,'xtick.labelsize': fontsize,'xtick.major.size': 6,'xtick.minor.size': 4\
         ,'xtick.major.width': 1,'xtick.minor.width': 1\
-        ,'ytick.labelsize': 16,'ytick.major.size': 12,'ytick.minor.size': 4\
+        ,'ytick.labelsize': fontsize,'ytick.major.size': 12,'ytick.minor.size': 4\
         ,'ytick.major.width': 1,'ytick.minor.width': 1\
         ,'axes.linewidth':1\
         ,'grid.alpha':0.1,'grid.linestyle':'-'})
@@ -645,6 +647,12 @@ def Graph2DSubPlotsDiff(Projects,Vars,Name,PathImg,S=None,SB=None,
                         cmap=cmap[f'Dif{V}'],
                         norm=MidpointNormalize(midpoint=0,vmin=vminT[f'Dif{V}'],
                             vmax=vmaxT[f'Dif{V}']))
+                C1 = np.linspace(vminT[f'Dif{V}'],0,3)
+                C2 = np.linspace(0,vmaxT[f'Dif{V}'],3)
+                C = np.unique(np.hstack((C1,C2)))
+                cs = axs[plot].contour(Data['x'], Data['y'], Data['V'][TT,:,:],
+                        levels=C,colors='k')
+                axs[plot].clabel(cs, cs.levels, inline=True, fontsize=12)
 
             plots.append(axs[plot].get_position().get_points().flatten())
 
