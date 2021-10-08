@@ -1,0 +1,126 @@
+snippet beg "begin{} / end{}" bA
+\begin{$1}
+	$0
+\end{$1}
+endsnippet
+
+# Fast writing
+snippet bff "Inline bf" wA
+\bf{${1:u}}$2
+endsnippet
+
+snippet emphh "Inline emph" wA
+\emph{${1:u}}$2
+endsnippet
+
+# Math
+snippet mk "Inline Math" wA
+$${1}$`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
+endsnippet
+
+snippet mbf "Inline Mathbf" wA
+\mathbf{${1:u}}$2
+endsnippet
+
+snippet tss "subscript" iA
+_{$1}$0
+endsnippet
+
+# superscripts
+snippet td "superscript" iA
+^{$1}$0
+endsnippet
+
+# Fractions
+snippet // "Fraction" iA
+\\frac{$1}{$2}$0
+endsnippet
+
+priority 1000
+snippet '^.*\)/' "() Fraction" wrA
+`!p
+stripped = match.string[:-1]
+depth = 0
+i = len(stripped) - 1
+while True:
+	if stripped[i] == ')': depth += 1
+	if stripped[i] == '(': depth -= 1
+	if depth == 0: break;
+	i -= 1
+snip.rv = stripped[0:i] + "\\frac{" + stripped[i+1:-1] + "}"
+`{$1}$0
+endsnippet
+
+# Figure
+snippet figurebox "Figures" b
+\begin{figure}[${1:H}]
+ \begin{adjustbox}{center,width=\textwidth}
+  \includegraphics[width=${2:0.6}\linewidth]{${3:figure.png}}
+ \end{adjustbox} 
+ \caption{\textmd{${4:Caption}}}
+ \label{fig:${5:Label}}
+\end{figure}
+$0
+endsnippet
+
+# Equations 
+snippet equationl "begin{equation}" bA
+\begin{equation}\label{eq:${1:Label}}
+	$0
+\end{equation}
+endsnippet
+	
+snippet equational "align" bA
+\begin{align}
+	$1&=$2 \nonumber \\\\
+	$3&=$4 \label{eq:${5:Label}}
+\end{align}
+endsnippet
+
+snippet textmat "superscript" iA
+\text{$1}$0
+endsnippet
+
+# References
+snippet eqref "eqref" wA
+\eqref{eq:$1}`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
+endsnippet
+
+snippet autoref "autoref" wA
+\autoref{$1}`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
+endsnippet
+
+# Citation
+snippet citee "Parenthesis citation" wA
+\cite{$1}`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
+endsnippet
+
+snippet citeA "Text citation" wA
+\citeA{$1}`!p
+if t[2] and t[2][0] not in [',', '.', '?', '-', ' ']:
+    snip.rv = ' '
+else:
+    snip.rv = ''
+`$2
+endsnippet
+	

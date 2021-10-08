@@ -39,7 +39,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 
-    
 # System
 def ShowError(fn,cl,msg):
     '''
@@ -169,5 +168,3 @@ def toc(time1):
     else:
         print(f'====\t{dif:.4f} seconds\t ====')
     return
-
-
